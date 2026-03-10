@@ -1,191 +1,180 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Ultimate PDF Tool | MANGALSINGH</title>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
-:root{--ink:#0a0a0a;--paper:#f5f0e8;--accent:#ff4d1c;--card:#fff;--border:#e0d8cc;--muted:#8a8078;--green:#059669;}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh; overflow-x: hidden;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>MANGALSINGH | Professional PDF Tool</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;700&display=swap');
+        
+        :root { --accent: #ff4d1c; --ink: #000; --paper: #fdfaf5; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'DM Sans', sans-serif; }
+        body { background: var(--paper); color: var(--ink); }
 
-/* --- LOGIN OVERLAY --- */
-#authOverlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: var(--paper); display: flex; align-items: center; justify-content: center;
-  z-index: 2000; transition: transform 0.6s cubic-bezier(0.87, 0, 0.13, 1);
-}
-.auth-card {
-  width: 92%; max-width: 380px; text-align: center; padding: 2.5rem 1.5rem;
-  background: var(--card); border: 3px solid var(--ink); border-radius: 30px;
-  box-shadow: 12px 12px 0px var(--ink);
-}
+        /* --- AUTH SCREEN --- */
+        #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--paper); z-index: 2000; display: flex; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.8, 0, 0.2, 1); }
+        .auth-card { background: #fff; padding: 2.5rem 1.5rem; border-radius: 32px; border: 3px solid var(--ink); box-shadow: 12px 12px 0px var(--ink); width: 90%; max-width: 380px; text-align: center; }
+        
+        /* --- MAIN UI --- */
+        header { padding: 1.2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2.5px solid var(--ink); background: #fff; position: sticky; top: 0; z-index: 100; }
+        .logo { font-family: 'Syne'; font-weight: 800; font-size: 1.4rem; letter-spacing: -1px; }
+        .user-pill { display: flex; align-items: center; gap: 8px; border: 2px solid var(--ink); padding: 6px 14px; border-radius: 50px; font-weight: 700; font-size: 0.85rem; cursor: pointer; background: #fff; }
+        .user-pill img { width: 24px; border-radius: 50%; border: 1px solid var(--ink); }
 
-/* --- HEADER & USER PILL --- */
-header{padding:.9rem 1.2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--ink);background:var(--paper);position:sticky;top:0;z-index:10;}
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:-.04em;}
-.logo span{color:var(--accent);}
-.user-pill { display: flex; align-items: center; gap: 8px; background: white; padding: 5px 12px; border-radius: 50px; border: 1.5px solid var(--ink); font-size: 0.75rem; font-weight: 700; cursor: pointer; }
-.user-pill img { width: 22px; height: 22px; border-radius: 50%; }
+        .container { max-width: 500px; margin: auto; padding: 2.5rem 1.2rem; text-align: center; }
+        .dropzone { border: 3px dashed #d1ccc0; border-radius: 24px; padding: 4rem 1rem; background: #fff; cursor: pointer; margin-bottom: 2.5rem; transition: 0.3s; }
+        .dropzone:active { transform: scale(0.96); border-color: var(--accent); }
 
-/* --- CONTENT STYLES --- */
-.wrap{max-width:540px;margin:0 auto;padding:1.4rem 1rem 2rem;}
-h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.75rem;line-height:1.1;letter-spacing:-.03em;margin-bottom:1rem;}
-.dz{border:2.5px dashed var(--border);border-radius:14px;padding:2.2rem 1rem;text-align:center;background:var(--card);cursor:pointer;transition:all 0.2s;}
-.dz:active{transform: scale(0.98); border-color: var(--accent);}
+        /* --- FEEDBACK --- */
+        .review-box { background: #fff; padding: 1.5rem; border-radius: 24px; border: 2.5px solid var(--ink); text-align: left; }
+        .review-list { max-height: 180px; overflow-y: auto; margin-bottom: 1.2rem; }
+        .review-item { padding: 10px 0; border-bottom: 1.5px solid #f0f0f0; font-size: 0.9rem; line-height: 1.4; }
+        .review-item b { color: var(--accent); display: block; margin-bottom: 2px; }
 
-/* --- FEEDBACK BOX --- */
-.comm-box { margin-top: 3rem; background: #fff; padding: 1.2rem; border: 2px solid var(--border); border-radius: 20px; }
-.comm-list { max-height: 250px; overflow-y: auto; margin-bottom: 1rem; }
-.comm-item { padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
-.comm-item strong { color: var(--accent); font-size: 0.8rem; }
-#feedbackInputArea { display: none; margin-top: 10px; border-top: 1px solid #eee; padding-top: 15px; }
-
-.cbtn{width:100%;padding:1rem;background:var(--ink);color:var(--paper);border:none;border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer; margin-top: 10px;}
-.prog{display:none;margin-top:1rem;}
-.prog.on{display:block;}
-.pbg{height:8px;background:var(--border);border-radius:10px;overflow:hidden;}
-.pbar{height:100%;background:var(--accent);width:0%; transition: width 0.3s;}
-
-footer { text-align: center; padding: 3rem 1rem; border-top: 1px solid var(--border); margin-top: 2rem; }
-.dev-name { font-family: 'Syne'; color: var(--accent); text-decoration: none; font-weight: 800; }
-</style>
+        input, textarea { width: 100%; padding: 14px; margin: 10px 0; border: 2.5px solid #eee; border-radius: 14px; font-size: 1rem; outline: none; transition: 0.3s; }
+        input:focus, textarea:focus { border-color: var(--ink); }
+        .btn { width: 100%; padding: 14px; background: var(--ink); color: #fff; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn-accent { background: var(--accent); }
+        .hidden { display: none !important; }
+    </style>
 </head>
 <body>
 
 <div id="authOverlay">
-  <div class="auth-card">
-    <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
-    <h2 style="font-family:'Syne';">MANGAL <span style="color:var(--accent)">PDF</span></h2>
-    <p style="color:var(--muted); font-size: 0.85rem; margin: 1rem 0 2rem;">Security ke liye login karein.</p>
-    <div id="g_id_onload"
-         data-client_id="952256750591-h5oi07sbio6g0q86acptsktlq85d8pt0.apps.googleusercontent.com"
-         data-callback="onSignIn"
-         data-auto_prompt="false">
+    <div class="auth-card">
+        <h2 style="font-family:'Syne'; font-size: 1.8rem; margin-bottom: 1.8rem;">MANGAL <span style="color:var(--accent)">PDF</span></h2>
+        
+        <div id="g_id_onload" data-client_id="952256750591-h5oi07sbio6g0q86acptsktlq85d8pt0.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
+        <div class="g_id_signin" data-type="standard" data-shape="pill" data-width="300"></div>
+
+        <p style="margin: 1.5rem 0; color: #aaa; font-weight: 700; font-size: 0.8rem;">OR PHONE LOGIN</p>
+
+        <div id="phoneInputArea">
+            <input type="text" id="phoneNo" placeholder="+91 00000 00000">
+            <div id="recaptcha-container"></div>
+            <button class="btn" onclick="requestOTP()">Get OTP</button>
+        </div>
+
+        <div id="otpInputArea" class="hidden">
+            <input type="text" id="otpVal" placeholder="Enter 6-digit OTP">
+            <button class="btn" style="background:#00c853;" onclick="confirmOTP()">Verify & Login</button>
+        </div>
     </div>
-    <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
-    <button onclick="skipAuth()" style="margin-top: 1.5rem; background:none; border:none; color:var(--muted); text-decoration:underline; font-size: 0.8rem; cursor:pointer;">Bina Login ke Continue &rarr;</button>
-  </div>
 </div>
 
 <header>
-  <div class="logo">MANGAL<span>SINGH</span></div>
-  <div id="userProfile"></div>
+    <div class="logo">MANGAL<span style="color:var(--accent)">SINGH</span></div>
+    <div id="userProfileArea"></div>
 </header>
 
-<div class="wrap">
-  <h1><em>HD Quality</em><br>PDF Tool</h1>
-  
-  <div class="dz" id="dz" onclick="document.getElementById('fi').click()">
-    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📁</div>
-    <div style="font-family:'Syne'; font-weight:700;">Files Select Karein</div>
-    <p style="font-size:0.7rem; color:var(--muted);">JPG ya PDF upload karein</p>
-  </div>
-  <input type="file" id="fi" multiple accept="image/*,.pdf" style="display:none">
-
-  <div class="prog" id="prog">
-    <div class="pbg"><div class="pbar" id="pbar"></div></div>
-    <p id="ptxt" style="text-align:center; font-size:0.7rem; margin-top:5px;">Processing...</p>
-  </div>
-
-  <div class="comm-box">
-    <h3 style="font-family:'Syne'; font-size: 0.95rem;">User Reviews 💬</h3>
-    <div class="comm-list" id="commList"></div>
+<div class="container">
+    <h1 style="font-family:'Syne'; font-size: 2rem; margin-bottom: 0.5rem;">HD PDF Creator</h1>
+    <p style="color:#666; margin-bottom: 2rem;">Fast, Secure aur Professional ✅</p>
     
-    <div id="feedbackInputArea">
-      <textarea id="uMsg" placeholder="Apna anubhav share karein..." style="width:100%; height:60px; padding:10px; border-radius:10px; border:1.5px solid var(--border); font-family:inherit;"></textarea>
-      <button class="cbtn" onclick="postComm()">Post Review</button>
+    <div class="dropzone" onclick="document.getElementById('pdfInput').click()">
+        <span style="font-size: 3.5rem;">📄</span>
+        <p style="font-weight:700; margin-top: 10px;">Select PDF File</p>
     </div>
-    <p id="guestMsg" style="text-align:center; font-size:0.75rem; color:var(--muted); margin-top:10px;">Review dene ke liye Login karein.</p>
-  </div>
+    <input type="file" id="pdfInput" accept=".pdf" class="hidden">
 
-  <footer>
-    <p style="font-size: 0.6rem; color:var(--muted);">DEVELOPED BY</p>
-    <a href="#" class="dev-name">MANGALSINGH</a>
-  </footer>
+    <div class="review-box">
+        <h3 style="margin-bottom: 1rem; font-family:'Syne';">User Reviews 💬</h3>
+        <div id="displayReviews" class="review-list"></div>
+        
+        <div id="postArea">
+            <textarea id="msgBox" placeholder="Write your feedback..."></textarea>
+            <button class="btn btn-accent" onclick="submitReview()">Post Review</button>
+        </div>
+        <div id="successInfo" class="hidden" style="text-align:center; padding: 15px; color:#00c853; font-weight:700;">
+            Review posted successfully! ❤️
+        </div>
+    </div>
 </div>
 
 <script>
-let currentUser = null;
-const {jsPDF} = window.jspdf;
+    // Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyB0fO8KW-dAUXCTIbJ3D7XeL3yG5p9j9Y4",
+        authDomain: "mangalpdf-4d665.firebaseapp.com",
+        projectId: "mangalpdf-4d665",
+        storageBucket: "mangalpdf-4d665.firebasestorage.app",
+        messagingSenderId: "709540181234",
+        appId: "1:709540181234:web:9cdabc78d17a08e8f00c6b"
+    };
+    firebase.initializeApp(firebaseConfig);
 
-// --- AUTH LOGIC ---
-function skipAuth() { 
-  document.getElementById('authOverlay').style.transform = 'translateY(-100%)'; 
-}
+    let activeUser = null;
 
-function onSignIn(response) {
-  const data = JSON.parse(atob(response.credential.split('.')[1]));
-  currentUser = { name: data.name, pic: data.picture, email: data.email };
-  
-  document.getElementById('userProfile').innerHTML = `
-    <div class="user-pill" onclick="logout()" title="Logout">
-      <img src="${currentUser.pic}"> ${currentUser.name.split(' ')[0]}
-    </div>
-  `;
-  
-  document.getElementById('guestMsg').style.display = 'none';
-  checkFeedbackStatus();
-  skipAuth();
-}
+    // --- Google Auth ---
+    function handleCredentialResponse(res) {
+        const payload = JSON.parse(atob(res.credential.split('.')[1]));
+        activeUser = { name: payload.name, img: payload.picture, id: payload.email };
+        onUserReady();
+    }
 
-function logout() {
-  google.accounts.id.disableAutoSelect();
-  location.reload();
-}
+    // --- Phone Auth ---
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' });
 
-// --- FEEDBACK LOGIC ---
-function checkFeedbackStatus() {
-  if (!currentUser) return;
-  const reviews = JSON.parse(localStorage.getItem('m_reviews') || '[]');
-  const alreadySent = reviews.some(r => r.email === currentUser.email);
-  
-  if (alreadySent) {
-    document.getElementById('feedbackInputArea').style.display = 'none';
-    document.getElementById('guestMsg').innerText = "Aapne review de diya hai. Dhanyawad! ❤️";
-    document.getElementById('guestMsg').style.display = 'block';
-  } else {
-    document.getElementById('feedbackInputArea').style.display = 'block';
-  }
-}
+    function requestOTP() {
+        const num = document.getElementById('phoneNo').value;
+        if(!num.includes('+')) return alert("Add +91 before number");
+        firebase.auth().signInWithPhoneNumber(num, window.recaptchaVerifier).then(res => {
+            window.confirmationResult = res;
+            document.getElementById('phoneInputArea').classList.add('hidden');
+            document.getElementById('otpInputArea').classList.remove('hidden');
+        }).catch(e => alert(e.message));
+    }
 
-function postComm() {
-  const msg = document.getElementById('uMsg').value.trim();
-  if(!msg || !currentUser) return;
+    function confirmOTP() {
+        confirmationResult.confirm(document.getElementById('otpVal').value).then(res => {
+            activeUser = { 
+                name: "User " + res.user.phoneNumber.slice(-4), 
+                img: "https://cdn-icons-png.flaticon.com/512/3177/3177440.png", 
+                id: res.user.phoneNumber 
+            };
+            onUserReady();
+        }).catch(() => alert("Wrong OTP!"));
+    }
 
-  const reviews = JSON.parse(localStorage.getItem('m_reviews') || '[]');
-  reviews.push({ name: currentUser.name, email: currentUser.email, msg: msg });
-  localStorage.setItem('m_reviews', JSON.stringify(reviews));
-  
-  loadReviews();
-  checkFeedbackStatus();
-}
+    function onUserReady() {
+        document.getElementById('authOverlay').style.transform = 'translateY(-100%)';
+        document.getElementById('userProfileArea').innerHTML = `
+            <div class="user-pill" onclick="location.reload()">
+                <img src="${activeUser.img}"> ${activeUser.name.split(' ')[0]}
+            </div>`;
+        showReviews();
+    }
 
-function loadReviews() {
-  const reviews = JSON.parse(localStorage.getItem('m_reviews') || '[]');
-  const list = document.getElementById('commList');
-  if(reviews.length === 0) {
-    list.innerHTML = `<p style="color:var(--muted); font-size:0.8rem; text-align:center;">Abhi koi review nahi hai.</p>`;
-    return;
-  }
-  list.innerHTML = reviews.reverse().map(r => `
-    <div class="comm-item"><strong>${r.name}</strong><p>${r.msg}</p></div>
-  `).join('');
-}
+    // --- Review Logic ---
+    function submitReview() {
+        const txt = document.getElementById('msgBox').value.trim();
+        if(!txt) return;
+        let data = JSON.parse(localStorage.getItem('m_data') || '[]');
+        data.push({ user: activeUser.name, text: txt, uid: activeUser.id });
+        localStorage.setItem('m_data', JSON.stringify(data));
+        showReviews();
+    }
 
-// --- FILE LOGIC (Old PDF/JPG logic included) ---
-document.getElementById('fi').onchange = async (e) => {
-  const files = [...e.target.files];
-  if(!files.length) return;
-  alert(files.length + " files select ho gayi hain! PDF processing shuru...");
-  // Yahan aap apna purana conversion logic (convertPdfToImg ya jsPDF) add kar sakte hain.
-};
+    function showReviews() {
+        let data = JSON.parse(localStorage.getItem('m_data') || '[]');
+        const list = document.getElementById('displayReviews');
+        const done = data.some(r => r.uid === activeUser.id);
+        
+        if(done) {
+            document.getElementById('postArea').classList.add('hidden');
+            document.getElementById('successInfo').classList.remove('hidden');
+        }
 
-window.onload = loadReviews;
+        list.innerHTML = data.length ? data.reverse().map(r => `
+            <div class="review-item"><b>${r.user}</b>${r.text}</div>
+        `).join('') : '<p style="font-size:0.8rem; color:#aaa;">No reviews yet.</p>';
+    }
 </script>
 </body>
 </html>
+
