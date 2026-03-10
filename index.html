@@ -3,103 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>MANGALSINGH | Professional PDF Tool</title>
+    <title>MANGALSINGH | PDF Tool</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;700&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=DM+Sans:wght@400;700&display=swap');
         :root { --accent: #ff4d1c; --ink: #000; --paper: #fdfaf5; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'DM Sans', sans-serif; }
         body { background: var(--paper); color: var(--ink); }
 
-        /* --- AUTH SCREEN --- */
-        #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--paper); z-index: 2000; display: flex; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.8, 0, 0.2, 1); }
-        .auth-card { background: #fff; padding: 2.5rem 1.5rem; border-radius: 32px; border: 3px solid var(--ink); box-shadow: 12px 12px 0px var(--ink); width: 90%; max-width: 380px; text-align: center; }
+        /* --- LOGIN OVERLAY --- */
+        #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--paper); z-index: 2000; display: flex; align-items: center; justify-content: center; transition: 0.8s ease-in-out; }
+        .auth-card { background: #fff; padding: 2.5rem 1.5rem; border-radius: 32px; border: 3px solid var(--ink); box-shadow: 12px 12px 0px var(--ink); width: 92%; max-width: 380px; text-align: center; }
         
-        /* --- MAIN UI --- */
         header { padding: 1.2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2.5px solid var(--ink); background: #fff; position: sticky; top: 0; z-index: 100; }
-        .logo { font-family: 'Syne'; font-weight: 800; font-size: 1.4rem; letter-spacing: -1px; }
-        .user-pill { display: flex; align-items: center; gap: 8px; border: 2px solid var(--ink); padding: 6px 14px; border-radius: 50px; font-weight: 700; font-size: 0.85rem; cursor: pointer; background: #fff; }
-        .user-pill img { width: 24px; border-radius: 50%; border: 1px solid var(--ink); }
+        .logo { font-family: 'Syne'; font-weight: 800; font-size: 1.4rem; }
+        .user-pill { display: flex; align-items: center; gap: 8px; border: 2px solid var(--ink); padding: 6px 14px; border-radius: 50px; font-weight: 700; background: #fff; cursor: pointer; }
+        .user-pill img { width: 24px; border-radius: 50%; }
 
         .container { max-width: 500px; margin: auto; padding: 2.5rem 1.2rem; text-align: center; }
-        .dropzone { border: 3px dashed #d1ccc0; border-radius: 24px; padding: 4rem 1rem; background: #fff; cursor: pointer; margin-bottom: 2.5rem; transition: 0.3s; }
-        .dropzone:active { transform: scale(0.96); border-color: var(--accent); }
-
-        /* --- FEEDBACK --- */
-        .review-box { background: #fff; padding: 1.5rem; border-radius: 24px; border: 2.5px solid var(--ink); text-align: left; }
-        .review-list { max-height: 180px; overflow-y: auto; margin-bottom: 1.2rem; }
-        .review-item { padding: 10px 0; border-bottom: 1.5px solid #f0f0f0; font-size: 0.9rem; line-height: 1.4; }
-        .review-item b { color: var(--accent); display: block; margin-bottom: 2px; }
-
-        input, textarea { width: 100%; padding: 14px; margin: 10px 0; border: 2.5px solid #eee; border-radius: 14px; font-size: 1rem; outline: none; transition: 0.3s; }
-        input:focus, textarea:focus { border-color: var(--ink); }
-        .btn { width: 100%; padding: 14px; background: var(--ink); color: #fff; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .btn-accent { background: var(--accent); }
+        .dropzone { border: 3px dashed #d1ccc0; border-radius: 24px; padding: 4rem 1rem; background: #fff; cursor: pointer; margin-bottom: 2rem; }
+        
+        input, textarea { width: 100%; padding: 14px; margin: 10px 0; border: 2.5px solid #eee; border-radius: 14px; font-size: 1rem; outline: none; }
+        .btn { width: 100%; padding: 14px; background: var(--ink); color: #fff; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; }
         .hidden { display: none !important; }
+
+        /* Review Section */
+        .review-box { background: #fff; padding: 1.5rem; border-radius: 24px; border: 2.5px solid var(--ink); text-align: left; }
+        .review-item { padding: 10px 0; border-bottom: 1.5px solid #f0f0f0; font-size: 0.9rem; }
+        .review-item b { color: var(--accent); display: block; }
     </style>
 </head>
 <body>
 
 <div id="authOverlay">
     <div class="auth-card">
-        <h2 style="font-family:'Syne'; font-size: 1.8rem; margin-bottom: 1.8rem;">MANGAL <span style="color:var(--accent)">PDF</span></h2>
+        <h2 style="font-family:'Syne'; margin-bottom: 1.5rem;">MANGAL <span style="color:var(--accent)">PDF</span></h2>
         
-        <div id="g_id_onload" data-client_id="952256750591-h5oi07sbio6g0q86acptsktlq85d8pt0.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
-        <div class="g_id_signin" data-type="standard" data-shape="pill" data-width="300"></div>
+        <div id="g_id_onload" data-client_id="952256750591-h5oi07sbio6g0q86acptsktlq85d8pt0.apps.googleusercontent.com" data-callback="handleGoogleLogin"></div>
+        <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
 
-        <p style="margin: 1.5rem 0; color: #aaa; font-weight: 700; font-size: 0.8rem;">OR PHONE LOGIN</p>
+        <p style="margin: 1.5rem 0; color: #aaa; font-weight: 700;">OR</p>
 
-        <div id="phoneInputArea">
-            <input type="text" id="phoneNo" placeholder="+91 00000 00000">
+        <div id="phoneArea">
+            <input type="text" id="phoneInput" placeholder="+91 00000 00000">
             <div id="recaptcha-container"></div>
-            <button class="btn" onclick="requestOTP()">Get OTP</button>
+            <button class="btn" onclick="sendOTP()">Get OTP</button>
         </div>
 
-        <div id="otpInputArea" class="hidden">
-            <input type="text" id="otpVal" placeholder="Enter 6-digit OTP">
-            <button class="btn" style="background:#00c853;" onclick="confirmOTP()">Verify & Login</button>
+        <div id="otpArea" class="hidden">
+            <input type="text" id="otpInput" placeholder="Enter OTP">
+            <button class="btn" style="background:#00c853;" onclick="checkOTP()">Verify</button>
         </div>
     </div>
 </div>
 
 <header>
     <div class="logo">MANGAL<span style="color:var(--accent)">SINGH</span></div>
-    <div id="userProfileArea"></div>
+    <div id="profileDisp"></div>
 </header>
 
 <div class="container">
-    <h1 style="font-family:'Syne'; font-size: 2rem; margin-bottom: 0.5rem;">HD PDF Creator</h1>
-    <p style="color:#666; margin-bottom: 2rem;">Fast, Secure aur Professional ✅</p>
+    <h1 style="font-family:'Syne'; font-size: 1.8rem;">HD PDF Creator</h1>
+    <p style="color:#666; margin-bottom: 2rem;">Fast & Secure Tool</p>
     
-    <div class="dropzone" onclick="document.getElementById('pdfInput').click()">
-        <span style="font-size: 3.5rem;">📄</span>
-        <p style="font-weight:700; margin-top: 10px;">Select PDF File</p>
+    <div class="dropzone" onclick="document.getElementById('pdfInp').click()">
+        <span style="font-size: 3rem;">📄</span>
+        <p style="font-weight:700;">Select PDF</p>
     </div>
-    <input type="file" id="pdfInput" accept=".pdf" class="hidden">
+    <input type="file" id="pdfInp" accept=".pdf" class="hidden">
 
     <div class="review-box">
-        <h3 style="margin-bottom: 1rem; font-family:'Syne';">User Reviews 💬</h3>
-        <div id="displayReviews" class="review-list"></div>
-        
-        <div id="postArea">
-            <textarea id="msgBox" placeholder="Write your feedback..."></textarea>
-            <button class="btn btn-accent" onclick="submitReview()">Post Review</button>
-        </div>
-        <div id="successInfo" class="hidden" style="text-align:center; padding: 15px; color:#00c853; font-weight:700;">
-            Review posted successfully! ❤️
+        <h3 style="margin-bottom: 1rem;">Feedback 💬</h3>
+        <div id="revList" style="max-height: 150px; overflow-y: auto; margin-bottom: 1rem;"></div>
+        <div id="postReviewArea">
+            <textarea id="msgBox" placeholder="Write feedback..."></textarea>
+            <button class="btn" style="background:var(--accent);" onclick="postRev()">Submit</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Firebase Config
+    // --- APKI SAHI CONFIG ---
     const firebaseConfig = {
-        apiKey: "AIzaSyB0fO8KW-dAUXCTIbJ3D7XeL3yG5p9j9Y4",
+        apiKey: "AIzaSyB0fO8KW-dAUXCTIbJ3D7XeszcVCtpTKkg", // Sahi key add ho gayi hai!
         authDomain: "mangalpdf-4d665.firebaseapp.com",
         projectId: "mangalpdf-4d665",
         storageBucket: "mangalpdf-4d665.firebasestorage.app",
@@ -108,71 +98,57 @@
     };
     firebase.initializeApp(firebaseConfig);
 
-    let activeUser = null;
+    let user = null;
 
-    // --- Google Auth ---
-    function handleCredentialResponse(res) {
+    // Google Login
+    function handleGoogleLogin(res) {
         const payload = JSON.parse(atob(res.credential.split('.')[1]));
-        activeUser = { name: payload.name, img: payload.picture, id: payload.email };
-        onUserReady();
+        user = { name: payload.name, img: payload.picture, id: payload.email };
+        ready();
     }
 
-    // --- Phone Auth ---
+    // Phone Login
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' });
-
-    function requestOTP() {
-        const num = document.getElementById('phoneNo').value;
-        if(!num.includes('+')) return alert("Add +91 before number");
+    function sendOTP() {
+        const num = document.getElementById('phoneInput').value;
         firebase.auth().signInWithPhoneNumber(num, window.recaptchaVerifier).then(res => {
-            window.confirmationResult = res;
-            document.getElementById('phoneInputArea').classList.add('hidden');
-            document.getElementById('otpInputArea').classList.remove('hidden');
+            window.conf = res;
+            document.getElementById('phoneArea').classList.add('hidden');
+            document.getElementById('otpArea').classList.remove('hidden');
         }).catch(e => alert(e.message));
     }
 
-    function confirmOTP() {
-        confirmationResult.confirm(document.getElementById('otpVal').value).then(res => {
-            activeUser = { 
-                name: "User " + res.user.phoneNumber.slice(-4), 
-                img: "https://cdn-icons-png.flaticon.com/512/3177/3177440.png", 
-                id: res.user.phoneNumber 
-            };
-            onUserReady();
-        }).catch(() => alert("Wrong OTP!"));
+    function checkOTP() {
+        conf.confirm(document.getElementById('otpInput').value).then(res => {
+            user = { name: "User " + res.user.phoneNumber.slice(-4), img: "https://cdn-icons-png.flaticon.com/512/3177/3177440.png", id: res.user.phoneNumber };
+            ready();
+        }).catch(() => alert("Galat OTP"));
     }
 
-    function onUserReady() {
+    function ready() {
         document.getElementById('authOverlay').style.transform = 'translateY(-100%)';
-        document.getElementById('userProfileArea').innerHTML = `
+        document.getElementById('profileDisp').innerHTML = `
             <div class="user-pill" onclick="location.reload()">
-                <img src="${activeUser.img}"> ${activeUser.name.split(' ')[0]}
+                <img src="${user.img}"> ${user.name.split(' ')[0]}
             </div>`;
-        showReviews();
+        loadRevs();
     }
 
-    // --- Review Logic ---
-    function submitReview() {
-        const txt = document.getElementById('msgBox').value.trim();
-        if(!txt) return;
-        let data = JSON.parse(localStorage.getItem('m_data') || '[]');
-        data.push({ user: activeUser.name, text: txt, uid: activeUser.id });
-        localStorage.setItem('m_data', JSON.stringify(data));
-        showReviews();
+    // Feedback
+    function postRev() {
+        const t = document.getElementById('msgBox').value.trim();
+        if(!t) return;
+        let d = JSON.parse(localStorage.getItem('revs') || '[]');
+        d.push({ u: user.name, m: t, uid: user.id });
+        localStorage.setItem('revs', JSON.stringify(d));
+        loadRevs();
     }
 
-    function showReviews() {
-        let data = JSON.parse(localStorage.getItem('m_data') || '[]');
-        const list = document.getElementById('displayReviews');
-        const done = data.some(r => r.uid === activeUser.id);
-        
-        if(done) {
-            document.getElementById('postArea').classList.add('hidden');
-            document.getElementById('successInfo').classList.remove('hidden');
-        }
-
-        list.innerHTML = data.length ? data.reverse().map(r => `
-            <div class="review-item"><b>${r.user}</b>${r.text}</div>
-        `).join('') : '<p style="font-size:0.8rem; color:#aaa;">No reviews yet.</p>';
+    function loadRevs() {
+        let d = JSON.parse(localStorage.getItem('revs') || '[]');
+        const list = document.getElementById('revList');
+        if(d.some(r => r.uid === user.id)) document.getElementById('postReviewArea').classList.add('hidden');
+        list.innerHTML = d.reverse().map(r => `<div class="review-item"><b>${r.u}</b>${r.m}</div>`).join('');
     }
 </script>
 </body>
